@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "OctoPrint-Phrozen-Connector"
+version = "0.1.0"
+description = "TODO"
+authors = [
+    {name = "PartialScience", email = "collin.marino.cm@gmail.com"}
+]
+readme = {file = "README.md", content-type = "markdown"}
+dynamic = [
+    "license"
+]
+
+requires-python = ">=3.7, <4"
+
+# any additional requirements (besides OctoPrint) should be listed here
+dependencies = []
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = [
+    "octoprint_phrozen_connector",
+    "octoprint_phrozen_connector.*"
+]
+
+[project.entry-points."octoprint.plugin"]
+phrozen_connector = "octoprint_phrozen_connector"
+
+[project.urls]
+Homepage = "https://github.com/PartialScience/OctoPrint-Phrozen-Connector"
+
+[project.optional-dependencies]
+develop = [
+    "go-task-bin"
+]
