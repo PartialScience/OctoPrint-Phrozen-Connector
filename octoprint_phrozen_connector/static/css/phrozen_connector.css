@@ -1,1 +1,36 @@
-/* TODO: Have your plugin's CSS files generated to here. */
+/* Phrozen Connector Plugin CSS */
+
+#tab_plugin_phrozen_connector .well {
+    background-color: #f5f5f5;
+    border: 1px solid #e3e3e3;
+    border-radius: 4px;
+    padding: 19px;
+    margin-bottom: 20px;
+}
+
+#tab_plugin_phrozen_connector .text-success {
+    color: #468847;
+}
+
+#tab_plugin_phrozen_connector .text-error {
+    color: #b94a48;
+}
+
+#tab_plugin_phrozen_connector .alert {
+    padding: 8px 35px 8px 14px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+#tab_plugin_phrozen_connector .alert-info {
+    color: #3a87ad;
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+}
+
+#tab_plugin_phrozen_connector .alert-success {
+    color: #468847;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
