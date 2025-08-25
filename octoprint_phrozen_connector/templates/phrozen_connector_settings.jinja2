@@ -1,8 +1,61 @@
 <form class="form-horizontal">
+    <h4>{{ _('API Configuration') }}</h4>
     <div class="control-group">
         <label class="control-label">{{ _('Auth Token') }}</label>
         <div class="controls">
             <input type="text" class="input-block-level" data-bind="value: settings.plugins.phrozen_connector.phrozen_auth_token">
+            <span class="help-inline">{{ _('Enter your Phrozen authentication token here.') }}</span>
+        </div>
+    </div>
+
+    <hr>
+    
+    <h4>{{ _('SMB Storage Configuration') }}</h4>
+    <div class="control-group">
+        <div class="controls">
+            <label class="checkbox">
+                <input type="checkbox" data-bind="checked: settings.plugins.phrozen_connector.smb_enabled">
+                {{ _('Enable SMB storage integration') }}
+            </label>
+        </div>
+    </div>
+
+    <div data-bind="visible: settings.plugins.phrozen_connector.smb_enabled">
+        <div class="alert alert-info">
+            <strong>{{ _('SMB Storage Info') }}</strong><br>
+            {{ _('When enabled, your Phrozen printer\'s storage will be mounted as "Phrozen SMB" folder in the Files tab. Requires sudo privileges for mounting.') }}
+        </div>
+        
+        <div class="control-group">
+            <label class="control-label">{{ _('Printer IP Address') }}</label>
+            <div class="controls">
+                <input type="text" class="input-block-level" data-bind="value: settings.plugins.phrozen_connector.smb_ip" placeholder="192.168.1.100">
+                <span class="help-inline">{{ _('IP address of your Phrozen printer') }}</span>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label">{{ _('SMB Username') }}</label>
+            <div class="controls">
+                <input type="text" class="input-block-level" data-bind="value: settings.plugins.phrozen_connector.smb_username">
+                <span class="help-inline">{{ _('Username for SMB connection') }}</span>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label">{{ _('SMB Password') }}</label>
+            <div class="controls">
+                <input type="password" class="input-block-level" data-bind="value: settings.plugins.phrozen_connector.smb_password">
+                <span class="help-inline">{{ _('Password for SMB connection') }}</span>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label">{{ _('Share Name') }}</label>
+            <div class="controls">
+                <input type="text" class="input-block-level" data-bind="value: settings.plugins.phrozen_connector.smb_share_name">
+                <span class="help-inline">{{ _('Name of the SMB share (default: share)') }}</span>
+            </div>
         </div>
     </div>
 </form>

@@ -143,4 +143,91 @@
             </div>
         </div>
     </div>
+
+    <!-- SMB File Management Section -->
+    <div class="row-fluid" style="margin-top: 30px;">
+        <div class="span12">
+            <h3>SMB File Management</h3>
+            
+            <div class="control-group">
+                <button class="btn btn-info" data-bind="click: function() { loadSmbFiles(); }">
+                    <i class="fas fa-folder-open" data-bind="css: { 'fa-spin': smbLoading }"></i>
+                    Browse SMB Files
+                </button>
+                
+                <span class="help-inline">Browse and upload files to your Phrozen printer's SMB share</span>
+            </div>
+
+            <!-- SMB File Upload -->
+            <div class="control-group">
+                <label class="control-label">Upload File:</label>
+                <div class="controls">
+                    <input type="file" id="smbFileUpload" accept=".ctb,.cbddlp,.photon,.pws,.pw0,.lgs,.fdg">
+                    <button class="btn btn-primary" data-bind="click: uploadToSmb, enable: !smbLoading()">
+                        <i class="fas fa-upload"></i> Upload to SMB
+                    </button>
+                </div>
+            </div>
+
+            <!-- Current Path -->
+            <div class="control-group" data-bind="visible: currentSmbPath">
+                <label class="control-label">Current Path:</label>
+                <div class="controls">
+                    <span class="label label-info" data-bind="text: currentSmbPath"></span>
+                    <button class="btn btn-mini" data-bind="click: function() { navigateToSmbPath('/'); }, visible: currentSmbPath() !== '/'">
+                        <i class="fas fa-home"></i> Root
+                    </button>
+                </div>
+            </div>
+
+            <!-- SMB Files List -->
+            <div data-bind="visible: smbFiles().length > 0">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Size</th>
+                            <th>Modified</th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: smbFiles">
+                        <tr>
+                            <td>
+                                <span data-bind="if: type === 'directory'">
+                                    <a href="#" data-bind="click: function() { $parent.navigateToSmbPath($parent.currentSmbPath() + '/' + name); }">
+                                        <i class="fas fa-folder"></i> <span data-bind="text: name"></span>
+                                    </a>
+                                </span>
+                                <span data-bind="if: type === 'file'">
+                                    <i class="fas fa-file"></i> <span data-bind="text: name"></span>
+                                </span>
+                            </td>
+                            <td data-bind="text: type"></td>
+                            <td data-bind="text: size || '-'"></td>
+                            <td data-bind="text: modified || '-'"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- SMB Loading -->
+            <div class="alert alert-info" data-bind="visible: smbLoading">
+                <i class="fas fa-spinner fa-spin"></i>
+                Loading SMB files...
+            </div>
+
+            <!-- SMB Error -->
+            <div class="alert alert-error" data-bind="visible: smbError">
+                <i class="fas fa-exclamation-circle"></i>
+                <span data-bind="text: smbError"></span>
+            </div>
+
+            <!-- No SMB files message -->
+            <div class="alert alert-warning" data-bind="visible: smbFiles().length === 0 && !smbLoading() && !smbError() && currentSmbPath()">
+                <i class="fas fa-folder-open"></i>
+                No files found in this directory.
+            </div>
+        </div>
+    </div>
 </div>
