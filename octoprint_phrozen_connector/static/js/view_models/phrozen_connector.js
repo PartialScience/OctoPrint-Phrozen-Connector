@@ -11,6 +11,12 @@ $(function() {
         self.currentDeviceIndex = ko.observable(0);
         self.isLoading = ko.observable(false);
         self.errorMessage = ko.observable("");
+        
+        // SMB-related observables
+        self.smbFiles = ko.observableArray([]);
+        self.currentSmbPath = ko.observable("/");
+        self.smbLoading = ko.observable(false);
+        self.smbError = ko.observable("");
 
         // Computed observables
         self.currentDevice = ko.computed(function() {
@@ -132,6 +138,75 @@ $(function() {
 
         self.useToken = async function() {
             await self.loadDevices();
+        };
+
+        // SMB File Management Methods
+        self.loadSmbFiles = async function(path) {
+            if (!path) path = self.currentSmbPath();
+            
+            self.smbLoading(true);
+            self.smbError("");
+            
+            try {
+                const response = await fetch('/api/plugin/phrozen_connector/smb/files?path=' + encodeURIComponent(path));
+                const data = await response.json();
+                
+                if (response.ok) {
+                    self.smbFiles(data.files || []);
+                    self.currentSmbPath(data.path);
+                } else {
+                    self.smbError(data.error || "Failed to load SMB files");
+                }
+            } catch (error) {
+                console.error("Error loading SMB files:", error);
+                self.smbError("Error loading SMB files: " + error.message);
+            } finally {
+                self.smbLoading(false);
+            }
+        };
+
+        self.navigateToSmbPath = function(path) {
+            self.loadSmbFiles(path);
+        };
+
+        self.uploadToSmb = function() {
+            const fileInput = document.getElementById('smbFileUpload');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                self.smbError("Please select a file to upload");
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('path', self.currentSmbPath());
+            
+            self.smbLoading(true);
+            self.smbError("");
+            
+            fetch('/api/plugin/phrozen_connector/smb/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Refresh file list
+                    self.loadSmbFiles();
+                    // Clear file input
+                    fileInput.value = '';
+                } else {
+                    self.smbError(data.error || "Upload failed");
+                }
+            })
+            .catch(error => {
+                console.error("Upload error:", error);
+                self.smbError("Upload error: " + error.message);
+            })
+            .finally(() => {
+                self.smbLoading(false);
+            });
         };
 
         // This will get called before the PhrozenConnectorViewModel gets bound to the DOM, but after its
