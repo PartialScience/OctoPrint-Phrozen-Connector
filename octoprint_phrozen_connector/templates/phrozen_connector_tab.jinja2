@@ -1,0 +1,146 @@
+<div id="tab_plugin_phrozen_connector" class="tab-pane">
+    <h3>Phrozen Connector</h3>
+    
+    <!-- Connection Status and Controls -->
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="control-group">
+                <button class="btn btn-primary" data-bind="click: loadDevices, enable: getPhrozenAuthToken()">
+                    <i class="fas fa-sync" data-bind="css: { 'fa-spin': isLoading }"></i>
+                    Load Devices
+                </button>
+                <span data-bind="visible: !getPhrozenAuthToken()" class="text-warning">
+                    Please configure your Phrozen auth token in settings first.
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Device Navigation -->
+    <div class="row-fluid" data-bind="visible: devices().length > 0">
+        <div class="span12">
+            <div class="control-group text-center">
+                <button class="btn" data-bind="click: previousDevice, enable: currentDeviceIndex() > 0">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <span class="label label-info" data-bind="text: deviceNavigation"></span>
+                <button class="btn" data-bind="click: nextDevice, enable: currentDeviceIndex() < devices().length - 1">
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Device Display -->
+    <div class="row-fluid" data-bind="visible: currentDevice">
+        <div class="span12">
+            <div class="well">
+                <!-- Device Header -->
+                <div class="row-fluid">
+                    <div class="span6">
+                        <h4 data-bind="text: currentDevice() && currentDevice().name">Printer Name</h4>
+                        <p class="muted">
+                            <strong>Model:</strong> <span data-bind="text: currentDevice() && currentDevice().device && currentDevice().device.name">Device Model</span><br>
+                            <strong>Serial:</strong> <span data-bind="text: currentDevice() && currentDevice().sn">Serial Number</span>
+                        </p>
+                    </div>
+                    <div class="span6 text-right">
+                        <span class="label" data-bind="css: stateClass, text: currentDevice() && currentDevice().state">State</span>
+                    </div>
+                </div>
+
+                <!-- Print Status (only visible when printing) -->
+                <div data-bind="visible: currentDevice() && currentDevice().state === 'print'">
+                    <hr>
+                    <div class="row-fluid">
+                        <div class="span12">
+                            <h5>Current Print Job</h5>
+                            <p><strong>File:</strong> <span data-bind="text: currentDevice() && currentDevice().fileName">File Name</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Progress Information -->
+                    <div class="row-fluid">
+                        <div class="span6">
+                            <div class="control-group">
+                                <label class="control-label">Layer Progress:</label>
+                                <div class="controls">
+                                    <span data-bind="text: layerProgress"></span>
+                                    <div class="progress">
+                                        <div class="progress-bar" data-bind="style: { width: layerPercentage() + '%' }"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="span6">
+                            <div class="control-group">
+                                <label class="control-label">Time Progress:</label>
+                                <div class="controls">
+                                    <span data-bind="text: timeProgress"></span>
+                                    <div class="progress">
+                                        <div class="progress-bar" data-bind="style: { width: timePercentage() + '%' }"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Time Information -->
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <strong>Start Time:</strong><br>
+                            <span data-bind="text: formattedStartTime"></span>
+                        </div>
+                        <div class="span4">
+                            <strong>Time Remaining:</strong><br>
+                            <span data-bind="text: timeRemaining"></span>
+                        </div>
+                        <div class="span4">
+                            <strong>Expected End:</strong><br>
+                            <span data-bind="text: expectedEndTime"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Non-printing state message -->
+                <div data-bind="visible: currentDevice() && currentDevice().state !== 'print'">
+                    <hr>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Printer is currently <strong data-bind="text: currentDevice() && currentDevice().state"></strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- No devices message -->
+    <div class="row-fluid" data-bind="visible: devices().length === 0 && !isLoading()">
+        <div class="span12">
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                No devices found. Click "Load Devices" to refresh.
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading message -->
+    <div class="row-fluid" data-bind="visible: isLoading">
+        <div class="span12">
+            <div class="alert alert-info">
+                <i class="fas fa-spinner fa-spin"></i>
+                Loading devices...
+            </div>
+        </div>
+    </div>
+
+    <!-- Error message -->
+    <div class="row-fluid" data-bind="visible: errorMessage">
+        <div class="span12">
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                <span data-bind="text: errorMessage"></span>
+            </div>
+        </div>
+    </div>
+</div>

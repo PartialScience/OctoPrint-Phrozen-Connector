@@ -10,18 +10,30 @@ from __future__ import absolute_import
 # Take a look at the documentation on what other plugin mixins are available.
 
 import octoprint.plugin
+import requests
+from flask import jsonify, request
 
-class Phrozen_connectorPlugin(octoprint.plugin.SettingsPlugin,
+class Phrozen_connectorPlugin(
+    octoprint.plugin.SettingsPlugin,
     octoprint.plugin.AssetPlugin,
-    octoprint.plugin.TemplatePlugin
+    octoprint.plugin.TemplatePlugin,
+    octoprint.plugin.BlueprintPlugin
 ):
 
     ##~~ SettingsPlugin mixin
 
     def get_settings_defaults(self):
         return {
-            # put your plugin's default settings here
+            "phrozen_auth_token": ""
         }
+
+    ##~~ TemplatePlugin mixin
+
+    def get_template_configs(self):
+        return [
+            dict(type="settings", template="phrozen_connector_settings.jinja2", custom_bindings=False),
+            dict(type="tab", template="phrozen_connector_tab.jinja2")
+        ]
 
     ##~~ AssetPlugin mixin
 
@@ -29,10 +41,44 @@ class Phrozen_connectorPlugin(octoprint.plugin.SettingsPlugin,
         # Define your plugin's asset files to automatically include in the
         # core UI here.
         return {
-            "js": ["js/phrozen_connector.js"],
             "css": ["css/phrozen_connector.css"],
-            "less": ["less/phrozen_connector.less"]
+            "js": [
+                "js/view_models/phrozen_connector.js",
+                "js/api_connectors/phrozen_api_connector.js"
+            ]
         }
+
+    ##~~ BlueprintPlugin mixin
+
+    @octoprint.plugin.BlueprintPlugin.route("/devices", methods=["GET"])
+    def get_devices(self):
+        # Get auth token from settings
+        auth_token = self._settings.get(["phrozen_auth_token"])
+        if not auth_token:
+            return jsonify({"error": "No auth token configured"}), 400
+
+        # Get query parameters
+        offset = request.args.get('offset', 0, type=int)
+        count = request.args.get('count', 10, type=int)
+
+        try:
+            # Make request to Phrozen API
+            url = f"https://device.phrozen3d.com/mobile/devices?offset={offset}&count={count}"
+            headers = {
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Encoding': 'gzip',
+                'User-Agent': 'okhttp/4.12.0',
+                'authorization': f'Bearer {auth_token}'
+            }
+            
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            
+            return jsonify(response.json())
+            
+        except requests.exceptions.RequestException as e:
+            self._logger.error(f"Failed to fetch devices from Phrozen API: {e}")
+            return jsonify({"error": str(e)}), 500
 
     ##~~ Softwareupdate hook
 
@@ -42,7 +88,7 @@ class Phrozen_connectorPlugin(octoprint.plugin.SettingsPlugin,
         # for details.
         return {
             "phrozen_connector": {
-                "displayName": "Phrozen_connector Plugin",
+                "displayName": "Phrozen Connector Plugin",
                 "displayVersion": self._plugin_version,
 
                 # version check: github repository
@@ -60,7 +106,7 @@ class Phrozen_connectorPlugin(octoprint.plugin.SettingsPlugin,
 # If you want your plugin to be registered within OctoPrint under a different name than what you defined in setup.py
 # ("OctoPrint-PluginSkeleton"), you may define that here. Same goes for the other metadata derived from setup.py that
 # can be overwritten via __plugin_xyz__ control properties. See the documentation for that.
-__plugin_name__ = "Phrozen_connector Plugin"
+__plugin_name__ = "Phrozen Connector Plugin"
 
 
 # Set the Python version your plugin is compatible with below. Recommended is Python 3 only for all new plugins.

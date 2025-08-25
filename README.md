@@ -1,6 +1,8 @@
 # OctoPrint-Phrozen-Connector
 
-**TODO:** Describe what your plugin does.
+This extension is currently still in development. 
+
+It will eventually allow users to view data about their Phrozen SLA printers in octoprint by accessing Phrozen's internal APIs.
 
 ## Setup
 
